@@ -7,8 +7,8 @@ RUN sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
     sed -i 's|security.debian.org|archive.debian.org/debian-security|g' /etc/apt/sources.list && \
     sed -i '/jessie-updates/d' /etc/apt/sources.list
 
-# Installeer de benodigde packages en PHP-extensies.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# **DE FIX:** Vertel APT om de verlopen GPG sleutel van het archief te vertrouwen.
+RUN apt-get update -o Acquire::Check-Valid-Until=false && apt-get install -y --no-install-recommends \
     freetds-dev \
     libsybdb5 \
     && docker-php-ext-install pdo_dblib curl gd xml
