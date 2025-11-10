@@ -1,73 +1,89 @@
-FROM alpine:3.8
+# FASE 1: De PHP Bouw-omgeving
+# We gebruiken de officiële PHP 5.6-FPM image, die gebaseerd is op Debian (glibc).
+FROM php:5.6-fpm as php_stage
 
-# Installeer alle benodigde packages + freetds-dev voor tsql
-RUN apk add --no-cache \
-    nginx \
-    php5-fpm \
-    php5-pdo \
-    php5-pdo_dblib \
-    php5-mssql \
-    php5-json \
-    php5-openssl \
-    php5-curl \
-    php5-gd \
-    php5-xml \
-    php5-ctype \
-    freetds \
+# De Debian-basis is oud, dus we moeten de sources aanpassen naar het archief.
+RUN sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+    sed -i 's|security.debian.org|archive.debian.org/debian-security|g' /etc/apt/sources.list && \
+    sed -i '/jessie-updates/d' /etc/apt/sources.list
+
+# Installeer de benodigde packages en PHP-extensies.
+RUN apt-get update && apt-get install -y --no-install-recommends \
     freetds-dev \
-    ca-certificates \
-    openssl \
-    supervisor
+    libsybdb5 \
+    && docker-php-ext-install pdo_dblib curl gd xml
 
-# Update de root certificaten in de container
-RUN update-ca-certificates
+# FASE 2: De Definitieve Productie-image
+# We starten met een schone, moderne en veilige basis (glibc).
+FROM ubuntu:20.04
 
-# FreeTDS config: MET [azure] sectie EN MAXIMALE TLS TOLERANTIE
+# Voorkom interactieve vragen tijdens installatie
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Installeer alleen de software die we echt nodig hebben: Nginx, Supervisor en de FreeTDS-bibliotheken.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nginx \
+    supervisor \
+    freetds-bin \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Kopieer de Magie ---
+# Kopieer de compatibele, kant-en-klare PHP 5.6 bestanden uit de bouw-omgeving.
+COPY --from=php_stage /usr/local/bin/php* /usr/local/bin/
+COPY --from=php_stage /usr/local/sbin/php-fpm* /usr/local/sbin/
+COPY --from=php_stage /usr/local/etc/ /usr/local/etc/
+COPY --from=php_stage /usr/lib/php/ /usr/lib/php/
+
+# Zorg ervoor dat de PHP-FPM configuratie correct is voor de nieuwe omgeving.
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = \/var\/run\/php\/php5.6-fpm.sock/g' /usr/local/etc/php-fpm.d/www.conf
+
+# Configureer FreeTDS
 RUN printf '[global]\n\
-tds version = 7.4\n\
-encryption = require\n\
-text size = 64512\n\
-\n\
-[azure]\n\
-host = iqmatrix.database.windows.net\n\
-port = 1433\n\
-tds version = 7.4\n\
-encryption = require\n\
-check certificate hostname = no\n\
-validate = no\n' > /etc/freetds.conf
+    tds version = 7.4\n\
+    encryption = require\n\
+    text size = 64512\n\
+    \n\
+    [azure]\n\
+    host = iqmatrix.database.windows.net\n\
+    port = 1433\n\
+    tds version = 7.4\n\
+    encryption = require\n\
+    check certificate hostname = no\n\
+    validate = no\n' > /etc/freetds/freetds.conf
 
-# Nginx config
+# Configureer Nginx om met de PHP-FPM socket te praten
 RUN printf 'server {\n\
-    listen 80;\n\
+    listen 80 default_server;\n\
     root /var/www;\n\
     index index.php index.html;\n\
     location / {\n\
-        try_files $uri $uri/ /index.php?$query_string;\n\
+    try_files $uri $uri/ /index.php?$query_string;\n\
     }\n\
     location ~ \.php$ {\n\
-        fastcgi_pass 127.0.0.1:9000;\n\
-        fastcgi_index index.php;\n\
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\
-        include fastcgi_params;\n\
-    }\n\
-}\n' > /etc/nginx/conf.d/default.conf
+    include fastcgi_params;\n\
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n\
+    fastcgi_pass unix:/var/run/php/php5.6-fpm.sock;\n\
+    }\n}\n' > /etc/nginx/sites-available/default
 
-# Supervisor config
+# Configureer Supervisor
 RUN printf '[supervisord]\n\
-nodaemon=true\n\
-\n\
-[program:php-fpm]\n\
-command=php-fpm5 -F\n\
-autostart=true\n\
-autorestart=true\n\
-\n\
-[program:nginx]\n\
-command=nginx -g "daemon off;"\n\
-autostart=true\n\
-autorestart=true\n' > /etc/supervisord.conf
+    nodaemon=true\n\
+    \n\
+    [program:php-fpm]\n\
+    command=/usr/local/sbin/php-fpm --nodaemonize\n\
+    autostart=true\n\
+    autorestart=true\n\
+    \n\
+    [program:nginx]\n\
+    command=nginx -g "daemon off;"\n\
+    autostart=true\n\
+    autorestart=true\n' > /etc/supervisor/conf.d/supervisord.conf
 
-RUN mkdir -p /var/www /run/nginx
+# Maak de benodigde directories aan
+RUN mkdir -p /var/www /var/run/php
 
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
