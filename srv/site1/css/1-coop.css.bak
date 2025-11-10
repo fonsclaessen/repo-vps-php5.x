@@ -1,0 +1,75 @@
+/* 1-coop.css  -  Overrides voor de COOP-pagina's */
+/* Auteur: Steven Verhorst, Tisneb | Cloudsoftware */
+
+/* Hoofdkleur: Donkerblauw = #2e419a  |  Bijkleur: Paars = #814c9e */
+
+.logo_coop_klant {
+   margin: 0 auto; 
+   width: 600px; 
+   height: 160px; 
+   background-image: url("/images/img/Logo-Coop&Co.png"); 
+   background-repeat: no-repeat;
+}
+
+h1, h3, .details_kop {
+   font-size: 26px;
+   color: #2E419A; /* hoofdkleur */
+   font-weight: 400;
+   margin-bottom: 28px;
+}
+
+input[type="submit"] {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   font-size: 16px;
+   background-color: #814C9E; /* bijkleur */
+   border-color: #555;
+   padding: 5px;
+   margin-top: 10px;
+   cursor: pointer;
+}
+
+/* SV: Eenmaal ingelogd */
+#page-top-outer {
+   background-color: #eee;
+   ZZZbackground-image: url("/images/img/Logo-Coop&Co200.png"); 
+   background-image: url("/images/img/Logo-Coop&CoLuuk.png"); 
+   background-repeat: no-repeat;
+   background-position: 50%;
+}
+
+#page-top-outer-grid {
+   height: 92px;
+   background-color: transparant;
+   ZZZbackground-image: url("/images/img/Logo-Coop&Co200.png"); 
+   ZZZbackground-image: url("/images/img/logo-1.jpg"); 
+   ZZZbackground-image: url("/images/img/logo-1.png"); 
+   ZZZbackground-image: url("/images/img/logo-2.png"); 
+   Zbackground-image: url("/images/img/logo-3.png"); 
+   ZZZbackground-image: url("/images/img/logo-4.png"); 
+   ZZZzzzbackground-image: url("/images/img/logo-92.png"); 
+   background-image: url("/images/img/ADZ.png"); 
+   background-repeat: no-repeat;
+   background-position: 0% ;
+}
+
+
+
+
+.nav-outer-repeat, button {
+   background-color: #814C9E;
+}
+
+button:hover, .nav .select a:hover {
+   background-color: #a16Cbe !important;
+}
+
+.table-header-repeat, .table-header-options {
+   background-color: #2E419A;
+}
+
+p a, a {
+   font-family: 'Noto Sans', sans-serif;
+   color: #814C9E;
+   font-weight: 400;
+}

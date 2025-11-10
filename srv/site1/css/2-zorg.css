@@ -1,0 +1,56 @@
+/* 2-zorg.css  -  Overrides voor de ZORG-pagina's */
+/* Auteur: Steven Verhorst, Tisneb | Cloudsoftware */
+
+/* Hoofdkleur: Groen = #04a759  |  Bijkleur: Paars = #814c9e */
+
+.logo_coop_klant {
+   margin: 0 auto; 
+   width: 600px; 
+   height: 160px; 
+   /*background-image: url("/images/img/Logo-Zorg&Co.png"); */
+    background-image: url("/images/img/Logo met s Zorg&Co 2020-2.jpg");
+   background-repeat: no-repeat;
+}
+
+h1, h3, .details_kop {
+   font-size: 26px;
+   color: #04a759; /* hoofdkleur */
+   font-weight: 400;
+   margin-bottom: 28px;
+}
+
+input[type="submit"] {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   font-size: 16px;
+   background-color: #814c9e; /* bijkleur */
+   border-color: #555;
+   padding: 5px;
+   margin-top: 10px;
+   cursor: pointer;
+}
+
+/* SV: Eenmaal ingelogd */
+#page-top-outer {
+   background-color: #eee;
+   background-image: url("/images/img/Logo-Zorg&Co200.png"); 
+   background-repeat: no-repeat;
+   background-position: 50%;
+}
+.nav-outer-repeat, button {
+   background-color: #814C9E;
+}
+
+button:hover, .nav .select a:hover {
+   background-color: #a16Cbe !important;
+}
+
+.table-header-repeat, .table-header-options {
+   background-color: #04a759;
+}
+
+p a, a {
+   font-family: 'Noto Sans', sans-serif;
+   color: #814C9E;
+   font-weight: 400;
+}

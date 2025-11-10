@@ -1,0 +1,55 @@
+/* 3-woonzorg.css  -  Overrides voor de WOONZORG-pagina's */
+/* Auteur: Steven Verhorst, Tisneb | Cloudsoftware */
+
+/* Hoofdkleur: Donkerblauw = #0c4c9e  |  Bijkleur: Oranje = #e97124 */
+
+.logo_coop_klant {
+   margin: 0 auto; 
+   width: 600px; 
+   height: 160px; 
+   background-image: url("/images/img/Logo-Woonzorg&Co.png"); 
+   background-repeat: no-repeat;
+}
+
+h1, h3, .details_kop {
+   font-size: 26px;
+   color: #0c4c9e; /* hoofdkleur */
+   font-weight: 400;
+   margin-bottom: 28px;
+}
+
+input[type="submit"] {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   font-size: 16px;
+   background-color: #e97124; /* bijkleur */
+   border-color: #555;
+   padding: 5px;
+   margin-top: 10px;
+   cursor: pointer;
+}
+
+/* SV: Eenmaal ingelogd */
+#page-top-outer {
+   background-color: #eee;
+   background-image: url("/images/img/Logo-Woonzorg&Co200.png"); 
+   background-repeat: no-repeat;
+   background-position: 50%;
+}
+.nav-outer-repeat, button {
+   background-color: #e97124;
+}
+
+button:hover, .nav .select a:hover {
+   background-color: #ff9144 !important;
+}
+
+.table-header-repeat, .table-header-options {
+   background-color: #0c4c9e;
+}
+
+p a, a {
+   font-family: 'Noto Sans', sans-serif;
+   color: #e97124;
+   font-weight: 400;
+}

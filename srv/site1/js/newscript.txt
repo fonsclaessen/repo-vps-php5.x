@@ -1,0 +1,203 @@
+pdf-model
+
+/*	
+	function get_pdf_blob_download_filename($werknemerid, $jaar) 
+	{
+		defined ( 'PDFTEMP_PATH' ) || define ( 'PDFTEMP_PATH', realpath ( dirname ( __FILE__ ) . '/../../pdftemp' ) );
+
+		//LET OP!, schakelt over naar de andere database!   mag alleen READ ONLY
+		//$otherdb = $this->load->database('bcm_adz', TRUE); // the TRUE paramater tells CI that you'd like to return the database object.		
+		$otherdb = $this->load->database('bcm_adz_bijlages', TRUE); // the TRUE paramater tells CI that you'd like to return the database object.		
+		
+		$sql = "SELECT bestand, bestandsnaam FROM ZZP_pdf WHERE werknemerid = $werknemerid and jaar = $jaar";		
+		$query_bcm = $otherdb->query ( $sql );
+		$rows = $query_bcm->result ();
+		
+		$pdf_content = $rows [0]->bestand;
+
+		//MSSQLTODO nog de folder en bestandnaam
+		$guid = $this->create_guid ();
+		$tmp_pdf_filename = "pdf_" . "$werknemerid" . "_" . $guid . ".pdf";
+		file_put_contents ( PDFTEMP_PATH . "/" . $tmp_pdf_filename, $pdf_content );
+
+		//om de filewrite wat tijd te geven doe ik hier een onzinnige bewerking, alleen maar om de write een commit op de schijf te kunnen laten doen.
+		//ik kreeg anders meldingen van corrupte pdf's, mogelijk doordat de write nog niet helemaal klaar was.
+		//gevaarlijk bij druk gebruikte systemen, dan kan de write een aardige vertraging oplopen.
+		$cnt = $this->grid_get_pdf_count2 ( $werknemerid, $filter_jaartal); //TODOFCL dit moet beter!
+		
+		//return PDFTEMP_PATH . "/" . $tmp_pdf_filename;
+		return $tmp_pdf_filename;
+	}
+*/	
+
+
+
+pdf controller
+	/*
+	function getpdf_download_json() {  
+		$this->load->model ( 'pdf_model' );	
+		$this->load->helper('url');
+
+		$werknemer_id = $this->input->post ( 'req_werknemer_id' );
+		$filter_jaartal = $this->input->post ( 'req_jaartal' );
+
+		$pdf_content_temp = $this->pdf_model->get_pdf_blob_download_filename($werknemer_id, $filter_jaartal);
+		
+		$pdfx["pdf"] = $pdf_content_temp;
+		$pdfx["errorr"] = "succes";
+		echo json_encode( $pdfx  );
+	}
+	*/
+	
+
+	
+	
+	ajaxpdf.js
+	
+	/*
+function ajax_pdf_download(werknemer_id, jaartal) {
+	alert(werknemer_id + "  " + jaartal);
+
+    $.post("/index.php/pdf/getpdf_download_json",
+		{
+		    req_werknemer_id: werknemer_id,
+			req_jaartal: jaartal
+		},
+		function(resp, resultaat)  {
+			alert(resp.errorr);
+		    if (resp.errorr == "succes") {
+		        window.location = "/index.php/pdf/pdfload?pdf=" + resp.pdf;
+			}
+			if (resp.errorr=="no-data") {
+				alert("geen pdf gevonden, no pdf available.");
+			}			
+		}, 
+		'json'
+		);
+	return true;
+};
+*/
+
+
+
+
+
+alle script
+
+/**
+ * 
+ */
+
+$(document).ready(function() {
+    $('#cbfilterfiat').click(function () {
+        var cb_checkboxstate = 0;
+        var checkboxstate = $(this).is(':checked');  //dit is de omgekeerde waarde van wat er op scherm te zien was voor de klik, daarom werkt het als toggle
+        if (checkboxstate) {
+            cb_checkboxstate = 1;
+        } else {
+            cb_checkboxstate = 0;
+        }
+    
+        $.post("/index.php/pdf/ajaxcheckboxfiatjson",
+            {
+                req_cbstate: cb_checkboxstate
+            },
+            function (resp, resultaat) {
+                if (resp.errorr == "succes") {
+                    window.location = "/index.php/pdf/fiatteren";
+                }
+                if (resp.errorr == "no-data") {
+                    alert("checkbox state fout.");
+                }
+            },
+            'json'
+            );
+        return true;
+
+    });
+ });
+
+function ajaxPdf(id_pdf) {
+    var input_id_pdf = id_pdf;
+    $.post("/index.php/pdf/getpdfjson",
+		{
+		    req_pdf_id: input_id_pdf,
+			req_adz: 0
+		},
+		function(resp, resultaat)  {
+		    if (resp.errorr == "succes") {
+		        window.location = "/index.php/pdf/pdfload?pdf=" + resp.pdf;
+			}
+			if (resp.errorr=="no-data") {
+				alert("geen pdf gevonden, no pdf available.");
+			}			
+		}, 
+		'json'
+		);
+	return true;
+};
+
+
+
+function ajaxPdfAdz(factuurADZ) {
+    var input_factuurADZ = factuurADZ.trim();
+	//alert("adz factuur ophalen : " + factuurADZ);
+	$.post("/index.php/pdf/getpdfjson",
+	get_pdf_blob_download_filename
+		{
+		    req_factuurADZ: input_factuurADZ,
+			req_adz: 1
+		},
+		function(resp, resultaat)  {
+			if (resp.errorr=="succes") {
+				window.location = "/index.php/pdf/pdfload?pdf=" + resp.pdf;			
+			}
+			if (resp.errorr=="no-data") {
+				alert("geen pdf gevonden, no pdf available.");
+			}			
+		}, 
+		'json'
+		);
+	return true;
+};
+
+function ajax_pdf_downloadtest() {
+	alert("hallotest");
+}
+
+function ajax_pdf_download(werknemer_id, jaartal) {
+	alert(werknemer_id + "  " + jaartal);
+}
+
+
+/*
+function ajax_pdf_download(werknemer_id, jaartal) {
+	alert(werknemer_id + "  " + jaartal);
+
+    $.post("/index.php/pdf/getpdf_download_json",
+		{
+		    req_werknemer_id: werknemer_id,
+			req_jaartal: jaartal
+		},
+		function(resp, resultaat)  {
+			alert(resp.errorr);
+		    if (resp.errorr == "succes") {
+		        window.location = "/index.php/pdf/pdfload?pdf=" + resp.pdf;
+			}
+			if (resp.errorr=="no-data") {
+				alert("geen pdf gevonden, no pdf available.");
+			}			
+		}, 
+		'json'
+		);
+	return true;
+};
+*/
+
+
+function searchforname(zoek_op)
+{
+  alert("zoek!");	
+  alert(zoek_op);
+}
+

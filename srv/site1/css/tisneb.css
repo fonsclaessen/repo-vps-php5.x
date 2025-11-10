@@ -1,0 +1,44 @@
+/* tisneb.css  -  Overrides voor ALLE COOP-gerelateerde pagina's */
+/* Auteur: Steven Verhorst, Tisneb | Cloudsoftware */
+
+/* SV: Loginscherm */
+
+div.logo_header {
+   width: 5000px; 
+   margin: 0px 0px 0px -2200px; 
+/* height: 200px; 
+   padding-top: 20px; */
+ /*  height: 244px; */
+   padding-top: 10px; 
+   padding-bottom: 10px; 
+   background-color: #eee;   
+}
+#inlog {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   /*font-size: 26px;*/
+}
+.p, h1 {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   font-size: 16px;
+}
+input[type="text"], input[type="password"] {
+   font-family: 'Noto Sans', sans-serif;
+   font-weight: 400;
+   font-size: 16px;
+}
+#username, #password, #password1, #password2 {
+   float:right;
+   width: 485px;
+}
+
+/* SV: Eenmaal ingelogd */
+#logo { color: #ccc; }
+#content-outer {
+   background-image: none;
+}
+
+#page-top-outer {
+   background-color: #eee;
+}
